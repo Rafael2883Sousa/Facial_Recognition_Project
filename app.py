@@ -1,3 +1,4 @@
+
 import os
 from io import BytesIO
 from flask import Flask, request, render_template, jsonify
@@ -8,7 +9,7 @@ import numpy as np
 
 app = Flask(__name__)
 model = load_model("modelo/modelo.h5")
-img_size = (100, 100)
+img_size = (160, 160)
 
 @app.route('/')
 def index():
@@ -25,13 +26,14 @@ def predict():
 
     img = load_img(BytesIO(file.read()), target_size=img_size)
     img_array = img_to_array(img)
-    img_array = preprocess_input(img_array)  
+    img_array = preprocess_input(img_array)
     img_array = np.expand_dims(img_array, axis=0)
-
+ 
     pred = model.predict(img_array)[0][0]
-    resultado = "É o Indivíduo" if pred > 0.7 else "Não é o Indivíduo"
+    resultado = "É o Indivíduo" if pred > 0.6 else "Não é o Indivíduo"
 
     return jsonify({'resultado': resultado, 'confiança': f"{pred:.2f}"})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
